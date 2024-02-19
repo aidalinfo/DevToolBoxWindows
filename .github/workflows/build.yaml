@@ -16,7 +16,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Generate build number (based on date/time for simplicity)
-      run: echo "REVISION=$(Get-Date -Format 'yyyyMMddHHmmss')" | Out-File -FilePath $env:GITHUB_ENV -Append
+      run: echo "REVISION=$(Get-Date -Format 'yyyyMMdd')" | Out-File -FilePath $env:GITHUB_ENV -Append
       shell: powershell
 
     - name: Restore NuGet packages
@@ -33,9 +33,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: release-$env:REVISION
-        release_name: Release $env:REVISION
-        body: "New release $env:REVISION"
+        tag_name: release-${{ env.REVISION }}
+        release_name: Release ${{ env.REVISION }}
+        body: "New release ${{ env.REVISION }}"
         draft: false
         prerelease: false
 
@@ -48,4 +48,3 @@ jobs:
         asset_path: ./Release.zip
         asset_name: Release.zip
         asset_content_type: application/zip
-
