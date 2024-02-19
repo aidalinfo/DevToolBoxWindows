@@ -1,6 +1,9 @@
 name: .NET Framework Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -13,7 +16,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Restore NuGet packages
-      run: nuget restore MonSolution.sln
+      run: nuget restore DevToolBox.sln
 
     - name: Build the project
-      run: msbuild MonSolution.sln /p:Configuration=Release /p:Platform="Any CPU"
+      run: msbuild DevToolBox.sln /p:Configuration=Release /p:Platform="Any CPU"
