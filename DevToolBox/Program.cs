@@ -524,9 +524,9 @@ namespace DevToolBox
             bool exit = false;
             while (!exit)
             {
+                Console.Clear();
                 AfficherInterface();
                 CheckSystemRequirements();
-                Console.Clear();
 
                 var choix = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
