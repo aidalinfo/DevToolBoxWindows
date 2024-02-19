@@ -16,7 +16,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Generate build number
-      run: echo "REVISION=$(Get-Date -Format 'yyyyMMddHHmm')" | Out-File -FilePath $env:GITHUB_ENV -Append
+      run: echo "REVISION=$(Get-Date -Format 'yyyyMMdd')" | Out-File -FilePath $env:GITHUB_ENV -Append
       shell: powershell
 
     - name: Restore NuGet packages
