@@ -70,6 +70,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+<<<<<<< HEAD
+=======
+    <None Include="config\init-quasar.sh" />
+    <None Include="config\Vagrantfile" />
+>>>>>>> 7d8bc13acb22f108a1977c90592abc21d687e9f3
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
