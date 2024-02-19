@@ -1,0 +1,67 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # Configuration de la machine virtuelle Debian 12
+  config.vm.box =  "gusztavvargadr/docker-linux"
+  ##Source https://github.com/gusztavvargadr/packer/blob/master/src/dc/packer/provisioners/shell-install/scripts/custom.sh
+
+  # Configuration du fournisseur Hyper-V
+    config.vm.provider "hyperv" do |hv|
+        hv.vmname = "devbox-myit"
+    end
+
+  config.vm.network "public_network", bridge: "Default Switch"
+    # Désactiver le partage de dossiers
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.ssh.password = "vagrant"
+  config.ssh.username = "vagrant"
+    # Configuration de la clé SSH
+  config.ssh.insert_key = false
+  config.vm.provision "file", source: "~/.ssh/id_ssh.pub", destination: "~/.ssh/authorized_keys"
+  config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "/home/vagrant/.ssh/id_rsa"
+  config.vm.provision "file", source: "./init-quasar.sh", destination: "/home/vagrant/init-quasar.sh"
+  # Script de provisionnement pour installer Git, NVM, et Node.js LTS
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "Setup de la VM !!  🚀🚀🚀"
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+    echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+    systemctl restart sshd
+    chmod 700 /home/vagrant/.ssh
+    chmod 600 /home/vagrant/.ssh/authorized_keys
+    chmod 600 /home/vagrant/.ssh/id_rsa
+    chmod 600 /home/vagrant/.ssh/id_ssh.pub
+    chown -R vagrant:vagrant /home/vagrant/.ssh
+    chmod +x /home/vagrant/init-quasar.sh
+    wget -O- https://aka.ms/install-vscode-server/setup.sh | sh
+    # Générer un mot de passe aléatoire et l'appliquer à l'utilisateur 'vagrant'
+    PASSWORD=$(openssl rand -base64 10 | tr -d '=+/') 
+    echo "vagrant:${PASSWORD}" | chpasswd
+    # Afficher le mot de passe généré
+    # Mise à jour des paquets et installation de Git
+    sudo apt-get update && sudo apt-get install -y git
+    # Installation de NVM (Node Version Manager)
+    sudo -u vagrant bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash'
+
+    # Définir l'environnement NVM pour l'utilisateur vagrant
+    sudo -u vagrant bash -c '\
+      export NVM_DIR="/home/vagrant/.nvm"; \
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"; \
+      nvm install --lts; \
+      nvm use --lts; \
+      source ~/.bashrc; \
+      ssh-keyscan -H github.com >> ~/.ssh/known_hosts; \
+      cd /home/vagrant && git clone git@github.com:aidalinfo/PROJET-pulse-myIT.git; \
+      cd /home/vagrant/PROJET-pulse-myIT && echo "n" | ./start.sh; \
+      cd /home/vagrant/PROJET-pulse-myIT && ./project.sh install branch apollo-server-v4 && ./project.sh install npm;
+    '
+    sudo -u vagrant bash -c '/home/vagrant/init-quasar.sh'
+    echo "Le mot de passe pour l'utilisateur 'vagrant' est : ${PASSWORD}"
+    IP=$(hostname -I | cut -d' ' -f1)
+    echo "Pour vous connecter à la VM via SSH, utilisez la commande suivante:"
+    echo "ssh vagrant@${IP}"
+  SHELL
+end
