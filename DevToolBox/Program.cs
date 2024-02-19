@@ -521,11 +521,11 @@ namespace DevToolBox
         static void Main(string[] args)
         {
             InitializeConfiguration();
-            AfficherInterface();
-            CheckSystemRequirements();
             bool exit = false;
             while (!exit)
             {
+                AfficherInterface();
+                CheckSystemRequirements();
                 Console.Clear();
 
                 var choix = AnsiConsole.Prompt(
