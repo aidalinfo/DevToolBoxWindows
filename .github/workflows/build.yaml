@@ -20,3 +20,12 @@ jobs:
 
     - name: Build the project
       run: msbuild DevToolBox.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Zip Artifacts
+      run: Compress-Archive -Path DevToolBox\bin\Release\* -DestinationPath Release.zip
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-artifacts
+        path: Release.zip
