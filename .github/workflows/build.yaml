@@ -3,7 +3,7 @@ name: .NET Framework Build
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
