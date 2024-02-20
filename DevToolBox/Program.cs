@@ -228,7 +228,7 @@ namespace DevToolBox
                 File.WriteAllText(jsonFilePath, jsonContent);
             }
         }
-        static void AfficherInterface()
+        static void welcomInterface()
         {
             // Créez l'objet FigletText
             var figletText = new FigletText("Aidalinfo DevToolBox Windows")
@@ -525,7 +525,7 @@ namespace DevToolBox
             while (!exit)
             {
                 Console.Clear();
-                AfficherInterface();
+                welcomInterface();
                 CheckSystemRequirements();
 
                 var choix = AnsiConsole.Prompt(

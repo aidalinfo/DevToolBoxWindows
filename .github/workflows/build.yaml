@@ -15,18 +15,29 @@ jobs:
     - name: Setup MSBuild path
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Generate build number
-      run: echo "REVISION=$(Get-Date -Format 'yyyyMMdd')" | Out-File -FilePath $env:GITHUB_ENV -Append
-      shell: powershell
+    - name: Extract versions from .csproj
+      shell: pwsh
+      run: |
+        $csprojPath = 'DevToolBox/DevToolBox.csproj'
+        $csproj = [xml](Get-Content $csprojPath)
+        
+        $version = $csproj.Project.PropertyGroup.Version
+        
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+
+    # - name: Generate build number
+    #   run: echo "REVISION=$(Get-Date -Format 'yyyyMMdd')" | Out-File -FilePath $env:GITHUB_ENV -Append
+    #   shell: powershell
 
     - name: Restore NuGet packages
       run: nuget restore DevToolBox.sln
 
     - name: Build the project
-      run: msbuild DevToolBox.sln /p:Configuration=Release /p:Platform="Any CPU"
+      run: msbuild DevToolBox.sln /p:Configuration=Release /p:Version=$env:VERSION  /p:Platform="Any CPU"
 
     - name: Zip the Release build
-      run: Compress-Archive -Path ./DevToolBox/bin/Release/* -DestinationPath ./ReleaseBuild.zip
+      run: Compress-Archive -Path ./DevToolBox/bin/Release/* -DestinationPath ./DevToolBox-Portable-$env:VERSION.zip
       shell: powershell
 
     - name: Create Release on GitHub
@@ -35,9 +46,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: release-${{ env.REVISION }}
-        release_name: Release ${{ env.REVISION }}
-        body: "New release ${{ env.REVISION }}"
+        tag_name: v$env:VERSION
+        release_name: Release $env:VERSION
+        body: "Version $env:VERSION"
         draft: false
         prerelease: false
 
@@ -47,6 +58,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./ReleaseBuild.zip
-        asset_name: ReleaseBuild.zip
+        asset_path: ./DevToolBox-Portable-$env:VERSION.zip
+        asset_name: DevToolBox-Portable-$env:VERSION.zip
         asset_content_type: application/zip
