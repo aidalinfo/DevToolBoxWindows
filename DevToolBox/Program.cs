@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Spectre.Console;
+using Newtonsoft.Json.Linq;
 
 namespace DevToolBox
 {
@@ -517,11 +520,47 @@ namespace DevToolBox
                 }
             }
         }
+        public static async Task CheckForNewVersionAsync()
+        {
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var latestVersion = await GetLatestVersionFromGitHubAsync("aidalinfo", "DevToolBoxWindows");
 
+            if (latestVersion != null && new Version(latestVersion) > new Version(currentVersion))
+            {
+                AnsiConsole.MarkupLine($"[green]Une nouvelle version est disponible : {latestVersion}. Votre version : {currentVersion}[/]");
+                System.Threading.Thread.Sleep(10000);
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[blue]Votre application est à jour.[/]");
+            }
+        }
+
+        private static async Task<string> GetLatestVersionFromGitHubAsync(string owner, string repo)
+        {
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "request");
+
+                var url = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+                try
+                {
+                    var response = await client.GetStringAsync(url);
+                    var jsonObject = JObject.Parse(response);
+                    return jsonObject["tag_name"].ToString().TrimStart('v');
+                }
+                catch (Exception ex)
+                {
+                    AnsiConsole.MarkupLine($"[red]Erreur lors de la vérification de la nouvelle version : {ex.Message}[/]");
+                    return null;
+                }
+            }
+        }
         static void Main(string[] args)
         {
             InitializeConfiguration();
             bool exit = false;
+            CheckForNewVersionAsync();
             while (!exit)
             {
                 Console.Clear();
