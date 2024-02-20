@@ -37,7 +37,7 @@ jobs:
       run: msbuild DevToolBox.sln /p:Configuration=Release /p:Version=$env:VERSION  /p:Platform="Any CPU"
 
     - name: Zip the Release build
-      run: Compress-Archive -Path ./DevToolBox/bin/Release/* -DestinationPath ./DevToolBox-Portable-${{ env.VERSION }}.zip
+      run: Compress-Archive -Path ./DevToolBox/bin/Release/* -DestinationPath ./DevToolBox-Portable-$env:VERSION.zip
       shell: pwsh
 
 
