@@ -522,7 +522,10 @@ namespace DevToolBox
         }
         public static async Task CheckForNewVersionAsync()
         {
-            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            Version localversion = Assembly.GetExecutingAssembly().GetName().Version;
+            string currentVersion = $"{localversion.Minor}.{localversion.Build}.{localversion.Revision}";
+            Console.WriteLine($"The current version is {currentVersion}");
+            System.Threading.Thread.Sleep(100000);
             var latestVersion = await GetLatestVersionFromGitHubAsync("aidalinfo", "DevToolBoxWindows");
 
             if (latestVersion != null && new Version(latestVersion) > new Version(currentVersion))
