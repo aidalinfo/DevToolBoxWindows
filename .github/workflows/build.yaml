@@ -40,6 +40,16 @@ jobs:
       run: Compress-Archive -Path ./DevToolBox/bin/Release/* -DestinationPath ./DevToolBox-Portable-$env:VERSION.zip
       shell: pwsh
 
+    - name: Generate Release Notes
+      id: generate_notes
+      shell: pwsh
+      run: |
+        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/releases/generate-notes" `
+                      -Method POST `
+                      -Headers @{Accept="application/vnd.github+json"; Authorization="token ${{ secrets.GITHUB_TOKEN }}"} `
+                      -Body (@{tag_name="v${{ env.VERSION }}"; target_commitish="master"; generate_release_notes=$true} | ConvertTo-Json)
+        echo "RELEASE_NOTES=$(echo $response.release_notes)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
 
     - name: Create Release on GitHub
       id: create_release
@@ -48,11 +58,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: v${{ env.VERSION }}
-        release_name: Release ${{ env.VERSION }}
-        body: "Version ${{ env.VERSION }}"
+        release_name: v${{ env.VERSION }}
+        body: ${{ env.RELEASE_NOTES }}
         draft: false
         prerelease: false
-
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
