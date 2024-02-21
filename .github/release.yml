@@ -3,10 +3,10 @@ changelog:
   categories:
     - title: 🚀 Features
       labels:
-        - Enchancement
+        - enchancement
     - title: 🐛 Bug Fixes
       labels:
-        - Bug
+        - bug
     - title: 📚 Documentation
       labels:
         - documentation
