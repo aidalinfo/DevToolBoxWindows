@@ -1,0 +1,22 @@
+name: PR Check Build of APP
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup MSBuild path
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Restore NuGet packages
+      run: nuget restore DevToolBox.sln
+
+    - name: Build the project
+      run: msbuild DevToolBox.sln /p:Configuration=Release /p:Version=$env:VERSION /p:Platform="Any CPU"
