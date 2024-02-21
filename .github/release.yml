@@ -1,0 +1,21 @@
+## Template for release note
+changelog:
+  categories:
+    - title: 🚀 Features
+      labels:
+        - enchancement
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+    - title: 📚 Documentation
+      labels:
+        - documentation
+    - title: 🧰 Maintenance
+      labels:
+        - maintenance
+    - title: 🛠 Refactoring
+      labels:
+        - refactoring
+    - title: Other Changes
+      labels:
+        - "*"

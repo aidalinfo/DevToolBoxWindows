@@ -12,9 +12,9 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <Version>0.0.5</Version>
-    <FileVersion>0.0.5</FileVersion>
-    <AssemblyVersion>0.0.5</AssemblyVersion>
+    <Version>0.0.6</Version>
+    <FileVersion>0.0.6</FileVersion>
+    <AssemblyVersion>0.0.6</AssemblyVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
